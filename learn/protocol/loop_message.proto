@@ -1,0 +1,11 @@
+package record;  
+message info {
+	message base //嵌套message的使用
+	{
+		required string name = 1;
+		required int32 id = 2;
+		optional string email = 3;
+	}
+	required base first = 1;
+	required int32 num = 2;
+}  
