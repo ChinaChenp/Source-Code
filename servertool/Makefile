@@ -13,12 +13,12 @@ CXXFLAGS = -g\
 		   -Werror\
 		   -Wconversion\
 		   -Wno-unused-parameter\
-		   -Wold-style-cast\
 		   -Woverloaded-virtual\
 		   -Wpointer-arith\
 		   -Wshadow\
 		   -Wwrite-strings\
 		   -O2\
+#		   -Wold-style-cast\
 
 SOURCES = $(FILES)
 OBJS = $(patsubst %.cc, %.o, $(wildcard *.cc))
