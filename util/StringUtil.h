@@ -1,68 +1,33 @@
-#define BASE_TOOL_STRING_UTIL_H__
+#ifndef BASE_TOOL_STRING_UTIL_H__
 #define BASE_TOOL_STRING_UTIL_H_
 
 #include <stdio.h>
+#include <ctype.h>
 #include <algorithm>
 #include <string>
+#include <vector>
 
 namespace basetool {
+    using std::string;
+    using std::vector;
 
      //to string
-    std::string toString( int value ) {
-        char buf[64] = {0};
-        snprintf(buf, 64, "%d", value);
-        return buf;
-    }
+    string toString( int value );
+    string toString( long value );
+    string toString( long long value );
+    string toString( unsigned value );
+    string toString( unsigned long value );
+    string toString( unsigned long long value );
+    string toString( float value );
+    string toString( double value );
+    string toString( long double value );
 
-    std::string toString( long value ) {
-        char buf[64] = {0};
-        snprintf(buf, 64, "%ld", value);
-        return buf;
-    }
-
-    std::string toString( long long value ) {
-        char buf[64] = {0};
-        snprintf(buf, 64, "%lld", value);
-        return buf;
-    }
-
-    std::string toString( unsigned value ) {
-        char buf[64] = {0};
-        snprintf(buf, 64, "%u", value);
-        return buf;
-    }
-
-    std::string toString( unsigned long value ) {
-        char buf[64] = {0};
-        snprintf(buf, 64, "%lu", value);
-        return buf;
-    }
-
-    std::string toString( unsigned long long value ) {
-        char buf[64] = {0};
-        snprintf(buf, 64, "%llu", value);
-        return buf;
-    }
-    std::string toString( float value ) {
-        char buf[64] = {0};
-        snprintf(buf, 64, "%f", value);
-        return buf;
-    }
-
-    std::string toString( double value ){
-        char buf[64] = {0};
-        snprintf(buf, 64, "%f", value);
-        return buf;
-    }
-
-    std::string toString( long double value ){
-        char buf[64] = {0};
-        snprintf(buf, 64, "%Lf", value);
-        return buf;
-    }
-
-    void strSplit(const string & str, const string & div_str, vector<std::string> value);
-    std::string strJoin(const std::vector<std::string> vl, const string & connect_str);
+    void strSplit(const string & str, const string & div_str, vector<string> & value);
+    string strJoin(const vector<string> vl, const string & connect_str);
+    void strUnique(vector<string> & ve);
+    void strToUpper(string & str);
+    void strToLower(string & str);
+    void strTrim(string & str);
 
 } //namespace basetool
 
