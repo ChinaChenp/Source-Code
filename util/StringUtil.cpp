@@ -1,6 +1,9 @@
 #include "StringUtil.h"
 
 namespace basetool {
+    using std::string;
+    using std::vector;
+
     string toString( int value ) {
         char buf[64] = {0};
         snprintf(buf, 64, "%d", value);
@@ -49,34 +52,34 @@ namespace basetool {
         return buf;
     }
 
-    string toString( long double value ){
+    string toString( long double value ) {
         char buf[64] = {0};
         snprintf(buf, 64, "%Lf", value);
         return buf;
     }
 
-    void strSplit(const string & str, const string & div_str, vector<std::string> & value) {
+    void strSplit(const string & str, const string & div_str, vector<string> & value) {
         int size = str.size();
-        std::string::size_type pos;
+        string::size_type pos;
         for (int i = 0; i < size;) {
             pos = str.find(div_str, i);
             value.push_back(str.substr(i, pos-i));
 
-            if (pos == std::string::npos) {
-                break;
-            } else {
+            if (pos != string::npos) {
                 i = pos + div_str.size();
+            } else {
+                break;
             }
         }
         return;
     }
 
-    std::string strJoin(const std::vector<std::string> vl, const string & connect_str) {
+    string strJoin(const vector<string> & vl, const string & connect_str) {
         string result;
 
         int size = vl.size();
-        for (int i=0; i< size; ++i) {
-            if (i+1 == size) {
+        for (int i = 0; i < size; ++i) {
+            if (i + 1 == size) {
                 result += vl[i];
             } else {
                 result += vl[i] + connect_str;
@@ -85,26 +88,41 @@ namespace basetool {
         return result;
     }
 
-    void strUnique(std::vector<std::string> & vl) {
+    string strJoinSides(const vector<string> & vl, const string &left_str,
+            const string & right_str, const string & connect_str) {
+         string result;
+
+         int size = vl.size();
+         for (int i = 0; i < size; ++i) {
+             if (i + 1 != size) {
+                result += left_str + vl[i] + right_str + connect_str;
+             } else {
+                result += left_str + vl[i] + right_str;
+             }
+         }
+         return result;
+    }
+
+    void strUnique(vector<string> & vl) {
         sort(vl.begin(), vl.end());
         vl.erase(unique(vl.begin(), vl.end()), vl.end());
     }
 
-    void strToUpper(std::string & str) {
-        std::string::iterator it = str.begin();
+    void strToUpper(string & str) {
+        string::iterator it = str.begin();
         for (; it != str.end(); ++it) {
             *it = toupper(*it);
         }
     }
 
-    void strToLower(std::string & str) {
-        std::string::iterator it = str.begin();
+    void strToLower(string & str) {
+        string::iterator it = str.begin();
         for (; it != str.end(); ++it) {
             *it = tolower(*it);
         }
     }
 
-    void strTrim(std::string & str) {
+    void strTrim(string & str) {
         string::size_type begin = 0, end = 0;
         const char *s = str.c_str();
 

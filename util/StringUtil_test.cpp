@@ -5,7 +5,6 @@
 using namespace std;
 using namespace basetool;
 
-
 void print(vector<string> & ve){
     for (int i = 0; i<ve.size(); ++i) {
          cout<< ve[i] << "-";
@@ -13,29 +12,35 @@ void print(vector<string> & ve){
     cout<<endl;
 }
 
+void debug(const string & oldstr, const string & newstr, const string & name) {
+    cout << "---" << oldstr << "--- " << name << " ---" << newstr << "---" << endl;
+}
+
 int main()
 {
     string val = "  jfdFFjjWOfjdkaBBjJk  ";
+    string temp = val;
     strToUpper(val);
-    cout << "-------" << val << "-------" << endl;
+    debug(temp, val, "upper");
+
     strToLower(val);
-    cout << "-------" << val << "-------" << endl;
+    debug(temp, val, "lower");
 
     //trim
     strTrim(val);
-    cout << "-------" << val << "-------" << endl;
+    debug(temp, val, "trim");
 
     val = "  abdd";
     strTrim(val);
-    cout << "-------" << val << "-------" << endl;
+    debug(temp, val, "trim");
 
     val = "fdsjal  ";
     strTrim(val);
-    cout << "-------" << val << "-------" << endl;
+    debug(temp, val, "trim");
 
     val = "   ";
     strTrim(val);
-    cout << "------#" << val << "#------" << endl;
+    debug(temp, val, "trim");
 
     //join
     vector<string> strs;
@@ -50,7 +55,7 @@ int main()
     string s = strJoin(strs, " or ");
     cout << "------#" << s << "#------" << endl;
 
-    s = "11&22&33&44&55fjdalj&&&789";
+    s = "11 &22&33&44&55fjdalj&&&789 ";
     vector<string> ve;
     strSplit(s, "&", ve);
     print(ve);

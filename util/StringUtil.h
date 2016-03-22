@@ -8,26 +8,27 @@
 #include <vector>
 
 namespace basetool {
-    using std::string;
-    using std::vector;
 
-     //to string
-    string toString( int value );
-    string toString( long value );
-    string toString( long long value );
-    string toString( unsigned value );
-    string toString( unsigned long value );
-    string toString( unsigned long long value );
-    string toString( float value );
-    string toString( double value );
-    string toString( long double value );
+     // type to string
+    std::string toString( int value );
+    std::string toString( long value );
+    std::string toString( long long value );
+    std::string toString( unsigned value );
+    std::string toString( unsigned long value );
+    std::string toString( unsigned long long value );
+    std::string toString( float value );
+    std::string toString( double value );
+    std::string toString( long double value );
 
-    void strSplit(const string & str, const string & div_str, vector<string> & value);
-    string strJoin(const vector<string> vl, const string & connect_str);
-    void strUnique(vector<string> & ve);
-    void strToUpper(string & str);
-    void strToLower(string & str);
-    void strTrim(string & str);
+    // string util
+    void strSplit(const std::string & str, const std::string & div_str, std::vector<std::string> & value);
+    std::string strJoin(const std::vector<std::string> & vl, const std::string & connect_str);
+    std::string strJoinSides(const std::vector<std::string> & vl, const std::string &left_str,
+            const std::string & right_str, const std::string & connect_str);
+    void strUnique(std::vector<std::string> & ve);
+    void strToUpper(std::string & str);
+    void strToLower(std::string & str);
+    void strTrim(std::string & str);
 
 } //namespace basetool
 
