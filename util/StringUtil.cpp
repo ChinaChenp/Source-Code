@@ -4,61 +4,61 @@ namespace basetool {
     using std::string;
     using std::vector;
 
-    string toString( int value ) {
+    string to_str( int value ) {
         char buf[64] = {0};
         snprintf(buf, 64, "%d", value);
         return buf;
     }
 
-    string toString( long value ) {
+    string to_str( long value ) {
         char buf[64] = {0};
         snprintf(buf, 64, "%ld", value);
         return buf;
     }
 
-    string toString( long long value ) {
+    string to_str( long long value ) {
         char buf[64] = {0};
         snprintf(buf, 64, "%lld", value);
         return buf;
     }
 
-    string toString( unsigned value ) {
+    string to_str( unsigned value ) {
         char buf[64] = {0};
         snprintf(buf, 64, "%u", value);
         return buf;
     }
 
-    string toString( unsigned long value ) {
+    string to_str( unsigned long value ) {
         char buf[64] = {0};
         snprintf(buf, 64, "%lu", value);
         return buf;
     }
 
-    string toString( unsigned long long value ) {
+    string to_str( unsigned long long value ) {
         char buf[64] = {0};
         snprintf(buf, 64, "%llu", value);
         return buf;
     }
 
-    string toString( float value ) {
+    string to_str( float value ) {
         char buf[64] = {0};
         snprintf(buf, 64, "%f", value);
         return buf;
     }
 
-    string toString( double value ){
+    string to_str( double value ){
         char buf[64] = {0};
         snprintf(buf, 64, "%f", value);
         return buf;
     }
 
-    string toString( long double value ) {
+    string to_str( long double value ) {
         char buf[64] = {0};
         snprintf(buf, 64, "%Lf", value);
         return buf;
     }
 
-    void strSplit(const string & str, const string & div_str, vector<string> & value) {
+    void str_split(const string & str, const string & div_str, vector<string> & value) {
         int size = str.size();
         string::size_type pos;
         for (int i = 0; i < size;) {
@@ -74,7 +74,7 @@ namespace basetool {
         return;
     }
 
-    string strJoin(const vector<string> & vl, const string & connect_str) {
+    string str_join(const vector<string> & vl, const string & connect_str) {
         string result;
 
         int size = vl.size();
@@ -88,7 +88,7 @@ namespace basetool {
         return result;
     }
 
-    string strJoinSides(const vector<string> & vl, const string &left_str,
+    string str_join_sides(const vector<string> & vl, const string &left_str,
             const string & right_str, const string & connect_str) {
          string result;
 
@@ -103,26 +103,26 @@ namespace basetool {
          return result;
     }
 
-    void strUnique(vector<string> & vl) {
+    void str_unique(vector<string> & vl) {
         sort(vl.begin(), vl.end());
         vl.erase(unique(vl.begin(), vl.end()), vl.end());
     }
 
-    void strToUpper(string & str) {
+    void str_toupper(string & str) {
         string::iterator it = str.begin();
         for (; it != str.end(); ++it) {
             *it = toupper(*it);
         }
     }
 
-    void strToLower(string & str) {
+    void str_tolower(string & str) {
         string::iterator it = str.begin();
         for (; it != str.end(); ++it) {
             *it = tolower(*it);
         }
     }
 
-    void strTrim(string & str) {
+    void str_trim(string & str) {
         string::size_type begin = 0, end = 0;
         const char *s = str.c_str();
 
@@ -138,4 +138,23 @@ namespace basetool {
 
         str = str.substr(begin, end - begin + 1);
     }
+
+    string::size_type find_str_npos(const string & first,
+            const string & second, unsigned int count) {
+
+        string::size_type n_pos = 0, pos = string::npos;
+
+        unsigned int index = 0, find_count = 0;
+        for (unsigned int i = 0; i < count; ++i) {
+            if ((pos = first.find(second, index)) == string::npos) {
+                break;
+            } else {
+                find_count++;
+                n_pos = pos;
+                index += pos + second.size();
+            }
+        }
+        return count == find_count ? n_pos : string::npos;
+    }
+
 }
