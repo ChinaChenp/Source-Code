@@ -74,6 +74,7 @@ TEST(StringUtilTest, uniq) {
     ve.push_back("11");
     ve.push_back("33");
     ve.push_back("22");
+    usleep(500);
 
     str_unique(ve);
     ASSERT_EQ("11", ve[0]);

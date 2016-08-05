@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/time.h>
 #include <sstream>
 
 namespace leveldb {
@@ -27,6 +28,18 @@ namespace leveldb {
 // Returns 0 if all tests pass.
 // Dies or returns a non-zero value if some test fails.
 extern int RunAllTests();
+
+class Timer {
+private:
+    struct timeval start_, end_;
+public:
+    Timer() { gettimeofday(&start_, NULL); }
+
+    float elapse() {
+        gettimeofday(&end_, NULL);
+        return ((end_.tv_sec - start_.tv_sec) * 1000000 + (end_.tv_usec - start_.tv_usec)) / 1000.0;
+    }
+};
 
 // An instance of Tester is allocated to hold temporary state during
 // the execution of an assertion.

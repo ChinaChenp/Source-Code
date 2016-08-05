@@ -51,8 +51,11 @@ int RunAllTests() {
                     continue;
                 }
             }
-            fprintf(stderr, "==== Test %s.%s\n", t.base, t.name);
+
+            leveldb::Timer times;
+            fprintf(stderr, "\033[40;32m==== Test\033[0m %s.%s ", t.base, t.name);
             (*t.func)();
+            fprintf(stderr, "(%.2f ms)\n", times.elapse());
             ++num;
         }
     }
