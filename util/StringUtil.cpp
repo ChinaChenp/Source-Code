@@ -58,20 +58,24 @@ namespace basetool {
         return buf;
     }
 
-    void str_split(const string & str, const string & div_str, vector<string> & value) {
-        int size = str.size();
-        string::size_type pos;
-        for (int i = 0; i < size;) {
-            pos = str.find(div_str, i);
-            value.push_back(str.substr(i, pos-i));
+    void str_split(const std::string & s, const std::string & delim, std::vector<std::string>& v) {
 
-            if (pos != string::npos) {
-                i = pos + div_str.size();
-            } else {
-                break;
+        if (s.empty() || delim.empty()) {
+            return;
+        }
+
+        std::string::size_type i = 0;
+        std::string::size_type pos = s.find(delim);
+        while (pos != string::npos) {
+            v.push_back(s.substr(i, pos-i));
+            i = ++pos;
+            pos = s.find(delim, pos);
+
+            if (pos == string::npos) {
+                v.push_back(s.substr(i, s.length()));
             }
         }
-        return;
+        return ;
     }
 
     string str_join(const vector<string> & vl, const string & connect_str) {
@@ -90,17 +94,17 @@ namespace basetool {
 
     string str_join_sides(const vector<string> & vl, const string &left_str,
             const string & right_str, const string & connect_str) {
-         string result;
+        string result;
 
-         int size = vl.size();
-         for (int i = 0; i < size; ++i) {
-             if (i + 1 != size) {
+        int size = vl.size();
+        for (int i = 0; i < size; ++i) {
+            if (i + 1 != size) {
                 result += left_str + vl[i] + right_str + connect_str;
-             } else {
+            } else {
                 result += left_str + vl[i] + right_str;
-             }
-         }
-         return result;
+            }
+        }
+        return result;
     }
 
     void str_unique(vector<string> & vl) {
@@ -133,7 +137,7 @@ namespace basetool {
 
         end = str.size() - 1;
         while(end > begin && s[end] == ' ') {
-             end--;
+            end--;
         }
 
         str = str.substr(begin, end - begin + 1);

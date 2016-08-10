@@ -1,5 +1,6 @@
 #include <string>
 #include <iostream>
+#include <unistd.h>
 #include "TestFramework.h"
 #include "StringUtil.h"
 
@@ -65,6 +66,20 @@ TEST(StringUtilTest, join_split) {
     ASSERT_EQ(vec[1], "22");
     ASSERT_EQ(vec[6], "");
     ASSERT_EQ(vec[7], "789 ");
+
+    s = "&&22&";
+    vector<string> vec1;
+    str_split(s, "&", vec1);
+    ASSERT_EQ(vec1.size(), 4);
+    ASSERT_EQ(vec1[0], "");
+    ASSERT_EQ(vec1[1], "");
+    ASSERT_EQ(vec1[2], "22");
+    ASSERT_EQ(vec1[3], "");
+
+    s = "";
+    vector<string> vec2;
+    str_split(s, "&", vec2);
+    ASSERT_EQ(vec2.size(), 0);
 }
 
 TEST(StringUtilTest, uniq) {

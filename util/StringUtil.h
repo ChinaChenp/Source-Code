@@ -21,7 +21,7 @@ namespace basetool {
     std::string to_str( long double value );
 
     // string util
-    void str_split(const std::string & str, const std::string & div_str, std::vector<std::string> & value);
+    void str_split(const std::string & s, const std::string & delim, std::vector<std::string>& v);
     std::string str_join(const std::vector<std::string> & vl, const std::string & connect_str);
     std::string str_join_sides(const std::vector<std::string> & vl, const std::string &left_str,
             const std::string & right_str, const std::string & connect_str);
