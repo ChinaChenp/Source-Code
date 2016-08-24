@@ -18,6 +18,16 @@ TEST(CityCoding_test, find) {
     ASSERT_EQ(0, ret);
     ASSERT_EQ("北京市----", result);
 
+    code = " 110000", result;
+    ret = data.isvalid(code, result);
+    ASSERT_EQ(0, ret);
+    ASSERT_EQ("北京市----", result);
+
+    code = "110000 ", result;
+    ret = data.isvalid(code, result);
+    ASSERT_EQ(0, ret);
+    ASSERT_EQ("北京市----", result);
+
     code = "810000";
     ret = data.isvalid(code, result);
     ASSERT_EQ(0, ret);
@@ -28,10 +38,10 @@ TEST(CityCoding_test, find) {
     ASSERT_EQ(0, ret);
     ASSERT_EQ("澳门特别行政区----", result);
 
-    code = "820000";
+    code = "150403";
     ret = data.isvalid(code, result);
     ASSERT_EQ(0, ret);
-    ASSERT_EQ("澳门特别行政区----", result);
+    ASSERT_EQ("内蒙古自治区--赤峰市--元宝山区", result);
 
     code = "130202";
     ret = data.isvalid(code, result);
@@ -58,6 +68,38 @@ TEST(CityCoding_test, find) {
     code = "110010";
     ret = data.isvalid(code, result);
     ASSERT_EQ(-5, ret);
+
+    code = "";
+    ret = data.isvalid(code, result);
+    ASSERT_EQ(-3, ret);
+
+    code = "0";
+    ret = data.isvalid(code, result);
+    ASSERT_EQ(-3, ret);
+
+    int codes = 110000;
+    ret = data.isvalid(codes, result);
+    ASSERT_EQ(0, ret);
+    ASSERT_EQ("北京市----", result);
+
+    codes = 120117;
+    ret = data.isvalid(codes, result);
+    ASSERT_EQ(0, ret);
+    ASSERT_EQ("天津市--市辖区--宁河区", result);
+
+    codes = 140321;
+    ret = data.isvalid(codes, result);
+    ASSERT_EQ(0, ret);
+    ASSERT_EQ("山西省--阳泉市--平定县", result);
+
+    codes = 441323;
+    ret = data.isvalid(codes, result);
+    ASSERT_EQ(0, ret);
+    ASSERT_EQ("广东省--惠州市--惠东县", result);
+
+    codes = 1100000;
+    ret = data.isvalid(codes, result);
+    ASSERT_EQ(-3, ret);
 }
 
 int main () {

@@ -44,6 +44,10 @@ public:
     int max_code() {return m_max_code;};
     int min_code() {return m_min_code;};
 private:
+    // No copying allowed
+    CCityCode(const CCityCode &);
+    void operator=(const CCityCode &);
+
     std::map<uint32, std::map<uint32, std::map<uint32, LOAD_DATA_S> > > m_load_data;
     uint32 m_max_code;
     int32 m_min_code;
