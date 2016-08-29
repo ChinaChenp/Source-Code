@@ -80,6 +80,12 @@ TEST(StringUtilTest, join_split) {
     vector<string> vec2;
     str_split(s, "&", vec2);
     ASSERT_EQ(vec2.size(), 0);
+
+    s = "aaaaa";
+    vector<string> vec3;
+    str_split(s, "&", vec3);
+    ASSERT_EQ(vec3.size(), 1);
+    ASSERT_EQ(vec3[0], "aaaaa");
 }
 
 TEST(StringUtilTest, uniq) {

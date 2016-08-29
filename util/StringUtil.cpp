@@ -66,13 +66,17 @@ namespace basetool {
 
         std::string::size_type i = 0;
         std::string::size_type pos = s.find(delim);
-        while (pos != string::npos) {
-            v.push_back(s.substr(i, pos-i));
-            i = ++pos;
-            pos = s.find(delim, pos);
+        if (pos == string::npos) {
+            v.push_back(s);
+        } else {
+            while (pos != string::npos) {
+                v.push_back(s.substr(i, pos-i));
+                i = ++pos;
+                pos = s.find(delim, pos);
 
-            if (pos == string::npos) {
-                v.push_back(s.substr(i, s.length()));
+                if (pos == string::npos) {
+                    v.push_back(s.substr(i, s.length()));
+                }
             }
         }
         return ;
