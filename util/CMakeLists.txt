@@ -10,20 +10,17 @@ set(CXX_FLAGS
     -Wall
     )
 
-set(CMAKE_CXX_COMPILER "g++")
+set(CMAKE_CXX_COMPILER "clang++")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0")
 MESSAGE(STATUS "BINARY dir " ${basetool_BINARY_DIR})
 MESSAGE(STATUS "SOURCE dir "${basetool_SOURCE_DIR})
 
 set(BASE_SRCS
     CityCoding.cpp
-    CityCoding.h
     md5.cpp
-    md5.h
     StringUtil.cpp
-    StringUtil.h
     TestFramework.cpp
-    TestFramework.h
+    UrlCodec.cpp
     )
 
 add_library(basetool SHARED ${BASE_SRCS}) 
@@ -41,3 +38,6 @@ add_executable(StringUtil_test StringUtil_test.cpp)
 target_link_libraries(StringUtil_test basetool)
 add_test(NAME StringUtil_test COMMAND StringUtil_test)
 
+add_executable(UrlCodec_test UrlCodec_test.cpp)                                                                                                                                 
+target_link_libraries(UrlCodec_test basetool)
+add_test(NAME UrlCodec_test COMMAND UrlCodec_test)
