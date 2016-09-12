@@ -11,7 +11,7 @@ class UrlCodec_test {};
 
 TEST(UrlCodec_test, decode) {
     string result;
-    char * url = "https://www.google.ca/?gws_rd=ssl#q=url+decoding";
+    const char * url = "https://www.google.ca/?gws_rd=ssl#q=url+decoding";
     result = UrlEncode(url);
     ASSERT_EQ(result, "https%3A%2F%2Fwww.google.ca%2F%3Fgws_rd%3Dssl%23q%3Durl%2Bdecoding");
 

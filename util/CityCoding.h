@@ -5,6 +5,7 @@
 
 #include <stdlib.h>
 #include <map>
+#include <set>
 #include <fstream>
 #include <string>
 
@@ -37,7 +38,8 @@ public:
     int load(const char * path);
 
     int isvalid(const std::string & code, std::string & desc);
-    int isvalid(int code, std::string & desc);
+    int isvalid(uint32 code, std::string & desc);
+    int isvalid_province(uint32 code) {return m_province.find(code) == m_province.end();};
     int province_size() {return m_pro_size;};
     int city_size() {return m_city_size;};
     int district_size() {return m_dist_size;};
@@ -49,6 +51,7 @@ private:
     void operator=(const CCityCode &);
 
     std::map<uint32, std::map<uint32, std::map<uint32, LOAD_DATA_S> > > m_load_data;
+    std::set<uint32> m_province;
     uint32 m_max_code;
     int32 m_min_code;
     uint32 m_pro_size;

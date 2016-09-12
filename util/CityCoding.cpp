@@ -101,6 +101,7 @@ int CCityCode::load(const char * path) {
         // update size
         if (pro != 0 && city == 0 && dist == 0) {
              m_pro_size++;
+             m_province.insert(c);
         }
 
         if (pro != 0 && city != 0 && dist == 0) {
@@ -134,7 +135,7 @@ int CCityCode::isvalid(const string & c, string & desc) {
     return isvalid(atoi(code.c_str()), desc);
 }
 
-int CCityCode::isvalid(int code, string & desc) {
+int CCityCode::isvalid(uint32 code, string & desc) {
     if (code == 0 || code < 110000 || code > 820000) {
         return CODE_INVALID_PARAM;
     }

@@ -8,7 +8,21 @@ using namespace std;
 
 class CityCoding_test{};
 
-TEST(CityCoding_test, find) {
+TEST(CityCoding_test, province_test) {
+    CCityCode data;
+    int ret = data.load("./city_code.txt");
+    ASSERT_EQ(0, ret);
+
+    uint32 code = 110000;
+    ret = data.isvalid_province(code);
+    ASSERT_EQ(0, ret);
+
+    code = 990000;
+    ret = data.isvalid_province(code);
+    ASSERT_EQ(1, ret);
+}
+
+TEST(CityCoding_test, coce_test) {
     CCityCode data;
     int ret = data.load("./city_code.txt");
     ASSERT_EQ(0, ret);
@@ -18,12 +32,12 @@ TEST(CityCoding_test, find) {
     ASSERT_EQ(0, ret);
     ASSERT_EQ("北京市----", result);
 
-    code = " 110000", result;
+    code = " 110000";
     ret = data.isvalid(code, result);
     ASSERT_EQ(0, ret);
     ASSERT_EQ("北京市----", result);
 
-    code = "110000 ", result;
+    code = "110000 ";
     ret = data.isvalid(code, result);
     ASSERT_EQ(0, ret);
     ASSERT_EQ("北京市----", result);
