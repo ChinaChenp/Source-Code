@@ -1,27 +1,31 @@
+#include <string.h>
+
 #include <iostream>
 #include <vector>
 using namespace std;
 
 /*
- * String 
+ * String
  */
 
 class String
 {
 public:
-	String():size_(0),data_(new char[1])
-	{data_[0] = '\0';}
+	String():size_(0),data_(new char[1]) {
+        data_[0] = '\0';
+    }
 
-	String(const char *str):size_(strlen(str)),data_(new char[size_ + 1])
-	{strcpy(data_, str);}
+	String(const char *str):size_(strlen(str)),data_(new char[size_ + 1]) {
+        strcpy(data_, str);
+    }
 
 	~String(){delete [] data_;}
 
-	String(const String &rs):size_(rs.size_),data_(new char[rs.size_ + 1])
-	{strcpy(data_, rs.data_);}
+	String(const String &rs):size_(rs.size_),data_(new char[rs.size_]) {
+        strcpy(data_, rs.data_);
+    }
 
-	String & operator=(const String &rs)
-	{
+	String & operator=(const String &rs) {
 		String tmp(rs);
 		std::swap(data_, tmp.data_);
 		size_ = rs.size_;
@@ -29,21 +33,20 @@ public:
 	}
 
 	//char operator
-	const char &operator[](size_t index)
-	{
-		if(index >=0 && index <size_)
+	const char &operator[](size_t index) {
+		if(index >= 0 && index < size_)
 			return data_[index];
 	}
 
-	String operator+(const String &other)
-	{
+	String operator+(const String &other) {
 		String tmp;
-		if(!data_)
+		if(!data_) {
 			tmp = other;
-		if(!other.data_)
+        }
+
+		if(!other.data_) {
 			tmp = *this;
-		else
-		{
+        } else {
 			tmp.size_ = size_ + other.size_;
 			tmp.data_ = new char[tmp.size_ + 1];
 			strcpy(tmp.data_, data_);
@@ -62,24 +65,20 @@ public:
 	bool empty()
 	{return size_ == 0;}
 
-	friend ostream & operator<<(ostream &os, const String &s)
-	{
-		os<<s.data_; 
+	friend ostream & operator<<(ostream &os, const String &s) {
+		os << s.data_;
 		return os;
 	}
 
-	friend bool operator==(const String &s1, const String &s2)
-	{
+	friend bool operator==(const String &s1, const String &s2) {
 		return (s1.size_ == s2.size_ && strcmp(s1.data_, s2.data_) == 0);
 	}
 
-	friend bool operator>(const String &s1, const String &s2)
-	{
+	friend bool operator>(const String &s1, const String &s2) {
 		return (strcmp(s1.data_, s2.data_) > 0);
 	}
-	
-	friend bool operator<(const String &s1, const String &s2)
-	{
+
+	friend bool operator<(const String &s1, const String &s2) {
 		return (strcmp(s1.data_, s2.data_) < 0);
 	}
 
@@ -89,24 +88,20 @@ private:
 };
 
 /// ------------------------test-----------------------------
-void foo(String x)
-{
+void foo(String x) {
 	cout<<"x = "<<x<<" (test by value)"<<endl;
 }
 
-void bar(const String& x)
-{
+void bar(const String& x) {
 	cout<<"tmp = "<<x<<" (test by ref)"<<endl;
 }
 
-String baz()
-{
+String baz() {
 	String ret("world");
 	return ret;
 }
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
 	String s0;
 	String s1("hello");
 	String s2(s0);
@@ -118,7 +113,7 @@ int main(int argc, char* argv[])
 	cout<<"s3 = "<<s3<<endl;
 	String s4 = s1;
 	s2 = s1;
-	
+
 	cout<<"s4 = "<<s4<<endl;
 	cout<<"new s2 = "<<s2<<endl;
 
@@ -133,7 +128,7 @@ int main(int argc, char* argv[])
 	bar("temporary");
 	String s5 = baz();
 	cout<<"s5 = "<<s5<<endl;
-	
+
 	//string in vector
 	std::vector<String> svec;
 	svec.push_back(s0);
