@@ -1,0 +1,19 @@
+#filter
+#key1 = value1
+
+#-----space line---------
+teststring=chenping   
+ teststring1 =chenping   
+teststring2= chenping   
+ teststring3 = chenping   
+teststring4 = 
+
+#---------error line----------
+teststring5 chenping   
+
+#---------right line----------
+testint = 123
+testint64 = 1234567890123456
+testfloat = 12.3456
+
+

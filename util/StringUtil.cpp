@@ -112,6 +112,10 @@ namespace basetool {
     }
 
     void str_unique(vector<string> & vl) {
+        if (vl.empty()) {
+             return;
+        }
+
         sort(vl.begin(), vl.end());
         vl.erase(unique(vl.begin(), vl.end()), vl.end());
     }
@@ -131,6 +135,9 @@ namespace basetool {
     }
 
     void str_trim(string & str) {
+        if (str.empty()) {
+             return;
+        }
         string::size_type begin = 0, end = 0;
         const char *s = str.c_str();
 

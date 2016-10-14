@@ -21,6 +21,7 @@ set(BASE_SRCS
     StringUtil.cpp
     TestFramework.cpp
     UrlCodec.cpp
+    Conf.cpp
     )
 
 add_library(basetool SHARED ${BASE_SRCS}) 
@@ -41,3 +42,7 @@ add_test(NAME StringUtil_test COMMAND StringUtil_test)
 add_executable(UrlCodec_test UrlCodec_test.cpp)                                                                                                                                 
 target_link_libraries(UrlCodec_test basetool)
 add_test(NAME UrlCodec_test COMMAND UrlCodec_test)
+
+add_executable(Conf_test Conf_test.cpp)                                                                                                                                 
+target_link_libraries(Conf_test basetool)
+add_test(NAME Conf_test COMMAND Conf_test)
