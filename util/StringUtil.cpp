@@ -154,22 +154,36 @@ namespace basetool {
         str = str.substr(begin, end - begin + 1);
     }
 
-    string::size_type find_str_npos(const string & first,
-            const string & second, unsigned int count) {
-
-        string::size_type n_pos = 0, pos = string::npos;
-
-        unsigned int index = 0, find_count = 0;
-        for (unsigned int i = 0; i < count; ++i) {
-            if ((pos = first.find(second, index)) == string::npos) {
-                break;
-            } else {
-                find_count++;
-                n_pos = pos;
-                index += pos + second.size();
-            }
-        }
-        return count == find_count ? n_pos : string::npos;
+    bool str_end_with(const string & str, const string & match) {
+        return str.size() >= match.size() &&
+            str.rfind(match) + match.size() == str.size();
     }
 
+    bool str_start_with(const string & str, const string & match) {
+        return str.size() >= match.size() &&
+            str.substr(0, match.size()) == match;
+    }
+
+    string str_replace_all(const string & str, const string & old_str,
+            const string & new_str) {
+        if (old_str.empty()) {
+            return str;
+        }
+
+        string re;
+        string::size_type start_pos = 0;
+        string::size_type pos;
+        do {
+            if ((pos = str.find(old_str, start_pos)) == string::npos) {
+                break;
+            }
+
+            re.append(str.data() + start_pos, pos - start_pos);
+            re.append(new_str.data(), new_str.size());
+            start_pos = pos + old_str.size();
+        }while(1);
+        re.append(str.data() + start_pos, str.size() - start_pos);
+
+        return re;
+    }
 }

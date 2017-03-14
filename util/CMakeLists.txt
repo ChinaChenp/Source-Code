@@ -1,14 +1,14 @@
 cmake_minimum_required (VERSION 2.8)
 
-project (basetool)
+project (basetool C CXX)
 
 enable_testing()
 
-set(CXX_FLAGS
-    -g
-    -D_FILE_OFFSET_BITS=64
-    -Wall
-    )
+if (NOT CMAKE_BUILD_TYPE)
+    set (CMAKE_BUILD_TYPE, "Release")
+endif()
+
+set(CMAKE_CXX_FLAGS "-g -D_FILE_OFFSET_BITS=64 -Wall")
 
 set(CMAKE_CXX_COMPILER "clang++")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0")

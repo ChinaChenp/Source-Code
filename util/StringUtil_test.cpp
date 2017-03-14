@@ -103,17 +103,66 @@ TEST(StringUtilTest, uniq) {
     ASSERT_EQ("33", ve[2]);
 }
 
-TEST(StringUtilTest, find_str_npos) {
-    string src = "http://http://";
-    string::size_type n = find_str_npos(src, "http://", 1);
-    ASSERT_EQ(n, 0);
+TEST(StringUtilTest, end_with) {
+    string str = "chenp";
+    string match = "ch";
+    ASSERT_EQ(str_end_with(str, match), false);
 
-    n = find_str_npos(src, "http://", 2);
-    ASSERT_EQ(n, 7);
-    ASSERT_EQ("http://", src.substr(0, n));
+    match = "np";
+    ASSERT_EQ(str_end_with(str, match), true);
 
-    n = find_str_npos(src, "http://", 3);
-    ASSERT_EQ(n, string::npos);
+    str = " ";
+    match = "";
+    ASSERT_EQ(str_end_with(str, match), true);
+
+    str = " ";
+    match = " ";
+    ASSERT_EQ(str_end_with(str, match), true);
+
+    str = "";
+    match = "";
+    ASSERT_EQ(str_end_with(str, match), true);
+
+    str = "short_str";
+    match = "short str long";
+    ASSERT_EQ(str_end_with(str, match), false);
+}
+
+TEST(StringUtilTest, start_with) {
+    string str = "chenp";
+    string match = "ch";
+    ASSERT_EQ(str_start_with(str, match), true);
+
+    match = "np";
+    ASSERT_EQ(str_start_with(str, match), false);
+
+    str = " ";
+    match = "";
+    ASSERT_EQ(str_start_with(str, match), true);
+
+    str = " ";
+    match = " ";
+    ASSERT_EQ(str_start_with(str, match), true);
+
+    str = "";
+    match = "";
+    ASSERT_EQ(str_start_with(str, match), true);
+
+    str = "short_str";
+    match = "short str long";
+    ASSERT_EQ(str_start_with(str, match), false);
+}
+
+TEST(StringUtilTest, replace_all) {
+    string str= "1 2 3 1";
+    string re = str_replace_all(str, " ", "bb");
+    ASSERT_EQ(re, "1bb2bb3bb1");
+
+    re = str_replace_all(str, " 2", "A");
+    ASSERT_EQ(re, "1A 3 1");
+
+    re = str_replace_all(str, "1", "");
+    ASSERT_EQ(re, " 2 3 ");
 }
 
 int main () {
