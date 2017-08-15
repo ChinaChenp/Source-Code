@@ -1,4 +1,4 @@
-package log
+package main
 
 import (
 	"bufio"
@@ -20,7 +20,7 @@ const (
 	RotateDay
 )
 
-func (r *RotateState) check(now, last time.Time) bool {
+func (r *RotateState) checkRotateTime(now, last time.Time) bool {
 	switch {
 	case *r == RotateMinute && now.Minute() != last.Minute():
 		return true
@@ -35,11 +35,11 @@ func (r *RotateState) check(now, last time.Time) bool {
 func (r *RotateState) suffixName(t time.Time) string {
 	switch {
 	case *r == RotateMinute:
-		return fmt.Sprintf("%02d%02d%02d", t.Day(), t.Hour(), t.Minute())
+		return fmt.Sprintf(".%02d.%02d.%02d", t.Day(), t.Hour(), t.Minute())
 	case *r == RotateHour:
-		return fmt.Sprintf("%02d%02d", t.Day(), t.Hour())
+		return fmt.Sprintf(".%02d.%02d", t.Day(), t.Hour())
 	case *r == RotateDay:
-		return fmt.Sprintf("%02d", t.Day())
+		return fmt.Sprintf(".%02d", t.Day())
 	}
 	return ""
 }
@@ -57,8 +57,8 @@ const (
 
 var LogLevelName = []string{
 	DebugLog:   "DEBUG",
-	InfoLog:    "INFO",
-	WarningLog: "WARNING",
+	InfoLog:    "INFO ",
+	WarningLog: "WARN ",
 	ErrorLog:   "ERROR",
 	FatalLog:   "FATAL",
 }
@@ -99,16 +99,15 @@ type asyncBuffer struct {
 }
 
 type AsyncLog struct {
-	writer       *bufio.Writer
-	logdir       string // /home/log/
-	logname      string // passport
-	needfilenum  bool   // add log.go:80
-	logfd        *os.File
-	lasttime     time.Time
-	buffer       chan *asyncBuffer
-	loglevel     LogLevel
-	rotatestatus RotateState
-	stackdepth   int // stack depth
+	writer         *bufio.Writer
+	logPath        string // /home/test.go
+	needFilenum    bool   // add log.go:80
+	logFd          *os.File
+	lastRotateTime time.Time
+	buffer         chan *asyncBuffer
+	logLevel       LogLevel
+	rotateState    RotateState
+	stackDepth     int // stack depth
 }
 
 // init
@@ -122,25 +121,24 @@ const (
 	ioBufferSize = 256 * 1024
 )
 
-func NewAsyncLog(logdir, logname string, level LogLevel,
+func NewAsyncLog(logpath string, level LogLevel,
 	rotate RotateState, filenumer bool, depth int) (*AsyncLog, error) {
 	now := time.Now()
 	l := &AsyncLog{
-		logdir:       logdir,
-		logname:      logname,
-		needfilenum:  filenumer,
-		lasttime:     time.Now(),
-		buffer:       make(chan *asyncBuffer, bufferSize),
-		loglevel:     level,
-		rotatestatus: rotate,
-		stackdepth:   depth,
+		logPath:        logpath,
+		needFilenum:    filenumer,
+		lastRotateTime: time.Now(),
+		buffer:         make(chan *asyncBuffer, bufferSize),
+		logLevel:       level,
+		rotateState:    rotate,
+		stackDepth:     depth,
 	}
 
 	fd, _, err := l.createFile(now)
 	if err != nil {
 		return nil, err
 	}
-	l.logfd = fd
+	l.logFd = fd
 	l.writer = bufio.NewWriterSize(fd, ioBufferSize)
 
 	go l.consumerLog()
@@ -189,17 +187,17 @@ func (l *AsyncLog) Fatalf(format string, args ...interface{}) {
 
 //-------------------------Private-------------------------------------
 func (l *AsyncLog) write(level LogLevel, msg *bytes.Buffer) error {
-	if !l.loglevel.checkLevelValid(level) {
+	if !l.logLevel.checkLevelValid(level) {
 		return errors.New("log: log level invalid")
 	}
 
-	if level < l.loglevel.getLevel() {
+	if level < l.logLevel.getLevel() {
 		return nil
 	}
 
 	now := time.Now()
 
-	outmsg := l.header(now, level, l.stackdepth)
+	outmsg := l.header(now, level, l.stackDepth)
 	outmsg.Write(msg.Bytes())
 	if msg.Len() == 0 || msg.Bytes()[msg.Len()-1] != '\n' {
 		outmsg.WriteByte('\n')
@@ -245,7 +243,7 @@ func (l *AsyncLog) shortFile(file string) string {
 
 func (l *AsyncLog) header(t time.Time, level LogLevel, depth int) *bytes.Buffer {
 	file, line := "???", -1
-	if l.needfilenum {
+	if l.needFilenum {
 		var ok bool
 		_, file, line, ok = runtime.Caller(2 + depth)
 		if !ok {
@@ -261,7 +259,8 @@ func (l *AsyncLog) header(t time.Time, level LogLevel, depth int) *bytes.Buffer 
 func (l *AsyncLog) formatHeader(t time.Time, file string, level LogLevel, line int) *bytes.Buffer {
 	result := bytes.NewBuffer(nil)
 	// datetime
-	datetime := t.Format("2006-01-02T15:04:05.000000+08:00")
+	datetime := fmt.Sprintf("%04d%02d%02d %02d:%02d:%02d.%08d",
+		t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond())
 	result.Write([]byte(datetime))
 	result.WriteByte(' ')
 
@@ -269,25 +268,20 @@ func (l *AsyncLog) formatHeader(t time.Time, file string, level LogLevel, line i
 	result.Write([]byte(gHost))
 	result.WriteByte(' ')
 
-	// tag
-	result.Write([]byte(l.logname))
-
 	// pid
-	result.WriteByte('[')
 	result.Write([]byte(gPid))
-	result.Write([]byte("]: "))
-
-	// level
-	logname, _ := l.loglevel.getLevelName(level)
-	logname = "[" + logname + "]"
-	result.Write([]byte(logname))
 	result.WriteByte(' ')
 
-	// file
+	// level
+	logLevelname, _ := l.logLevel.getLevelName(level)
+	result.Write([]byte(logLevelname))
+	result.WriteByte(' ')
+
+	// file & line
 	if file != "???" && line != -1 {
 		result.Write([]byte(file))
 		result.Write([]byte(":"))
-		// line
+
 		result.Write([]byte(strconv.Itoa(line)))
 		result.WriteByte(' ')
 	}
@@ -296,51 +290,48 @@ func (l *AsyncLog) formatHeader(t time.Time, file string, level LogLevel, line i
 }
 
 func (l *AsyncLog) logName(t time.Time) string {
-	head := fmt.Sprintf("%s.log.%04d%02d",
-		l.logname,
+	head := fmt.Sprintf(".log.%04d.%02d",
 		t.Year(),
 		t.Month(),
 	)
 
-	suffix := l.rotatestatus.suffixName(t)
+	suffix := l.rotateState.suffixName(t)
 	return head + suffix
 }
 
 func (l *AsyncLog) createFile(t time.Time) (*os.File, string, error) {
-	if l.logname == "" || l.logdir == "" {
-		return nil, "", errors.New("log: log name or log dir is empty")
+	if l.logPath == "" {
+		return nil, "", errors.New("log: log path is nil")
 	}
 
-	logname := ""
-	if l.logdir[len(l.logdir)-1] == '/' {
-		logname = l.logdir + l.logName(t)
-	} else {
-		logname = l.logdir + "/" + l.logName(t)
-	}
+	openfile := l.logPath + l.logName(t)
 
-	fd, err := os.OpenFile(logname, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
+	fd, err := os.OpenFile(openfile, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
 	if err != nil {
 		return nil, "", err
 	}
-	return fd, logname, nil
+	return fd, openfile, nil
 }
 
 func (l *AsyncLog) rotateFile(t time.Time) {
-	if l.logfd != nil {
-		if l.rotatestatus.check(t, l.lasttime) {
+	if l.logFd != nil {
+		if l.rotateState.checkRotateTime(t, l.lastRotateTime) {
 			fd, _, err := l.createFile(t)
 			if err != nil {
 				l.exit(err)
 				return
 			}
 
-			l.writer.Flush()
-			l.logfd.Sync()
-			l.logfd.Close()
+			if l.writer != nil {
+				l.writer.Flush()
+			}
+
+			l.logFd.Sync()
+			l.logFd.Close()
 
 			l.writer = bufio.NewWriterSize(fd, ioBufferSize)
-			l.logfd = fd
-			l.lasttime = t
+			l.logFd = fd
+			l.lastRotateTime = t
 		}
 	}
 }
@@ -350,70 +341,70 @@ func (l *AsyncLog) exit(err error) {
 	os.Exit(2)
 }
 
-//var glog *AsyncLog
-//
-//func main() {
-//	var err error
-//	glog, err = NewAsyncLog("./log", "test", DebugLog, RotateMinute, false, 0)
-//	if err != nil {
-//		fmt.Println("new log error")
-//		return
-//	}
-//
-//	number, err := strconv.Atoi(os.Args[1])
-//
-//	thread_num, _ := strconv.Atoi(os.Args[2])
-//	chans := make(chan bool, thread_num)
-//	fmt.Println("start time: ", time.Now().UnixNano())
-//	for i := 0; i < thread_num; i++ {
-//		go func(id, num int, c chan bool) {
-//			for j := 0; j < num; j++ {
-//				//s := "-------------------------"
-//				glog.Debug("------------------------------------------")
-//				shit := 123.9
-//				slice := []byte{'1', '2', '3', '4'}
-//				type info struct {
-//					Name  string
-//					Age   int
-//					Score float32
-//				}
-//				info1 := info{
-//					"chenping",
-//					28,
-//					100.0,
-//				}
-//
-//				mp := map[string]interface{}{
-//					"Score": 123456.8,
-//					"need":  "you",
-//					"age":   123456789,
-//				}
-//				glog.Debugf("string %s, float %#v, slice %v, struct %, map %v", "----------------",
-//					shit, slice, info1, mp)
-//				glog.Info("info------------------------------------------")
-//				glog.Infof("infof------------------------------------------")
-//				glog.Warn("warn------------------------------------------")
-//				glog.Warnf("warnf------------------------------------------")
-//				glog.Error("error------------------------------------------")
-//				glog.Errorf("errorf------------------------------------------")
-//				glog.Fatal("fatal------------------------------------------")
-//				glog.Fatalf("fatalf------------------------------------------")
-//			}
-//			c <- true
-//		}(i, number, chans)
-//	}
-//
-//	count := 0
-//	for c := range chans {
-//		fmt.Println(c)
-//		count++
-//		if count >= thread_num {
-//			break
-//		}
-//	}
-//
-//	//glog.Error("-----------------------------------------done")
-//	fmt.Println("end time: ", time.Now().UnixNano())
-//	time.Sleep(4 * time.Second)
-//	fmt.Println("all done.............................")
-//}
+var glog *AsyncLog
+
+func main() {
+	var err error
+	glog, err = NewAsyncLog("./test", DebugLog, RotateHour, true, 0)
+	if err != nil {
+		fmt.Println("new log error")
+		return
+	}
+
+	number, err := strconv.Atoi(os.Args[1])
+
+	thread_num, _ := strconv.Atoi(os.Args[2])
+	chans := make(chan bool, thread_num)
+	fmt.Println("start time: ", time.Now().UnixNano())
+	for i := 0; i < thread_num; i++ {
+		go func(id, num int, c chan bool) {
+			for j := 0; j < num; j++ {
+				//s := "-------------------------"
+				glog.Debug("------------------------------------------")
+				shit := 123.9
+				slice := []byte{'1', '2', '3', '4'}
+				type info struct {
+					Name  string
+					Age   int
+					Score float32
+				}
+				info1 := info{
+					"chenping",
+					28,
+					100.0,
+				}
+
+				mp := map[string]interface{}{
+					"Score": 123456.8,
+					"need":  "you",
+					"age":   123456789,
+				}
+				glog.Debugf("string %s, float %#v, slice %v, struct %, map %v", "----------------",
+					shit, slice, info1, mp)
+				glog.Info("info------------------------------------------")
+				glog.Infof("infof------------------------------------------")
+				glog.Warn("warn------------------------------------------")
+				glog.Warnf("warnf------------------------------------------")
+				glog.Error("error------------------------------------------")
+				glog.Errorf("errorf------------------------------------------")
+				glog.Fatal("fatal------------------------------------------")
+				glog.Fatalf("fatalf------------------------------------------")
+			}
+			c <- true
+		}(i, number, chans)
+	}
+
+	count := 0
+	for c := range chans {
+		fmt.Println(c)
+		count++
+		if count >= thread_num {
+			break
+		}
+	}
+
+	//glog.Error("-----------------------------------------done")
+	fmt.Println("end time: ", time.Now().UnixNano())
+	time.Sleep(3 * time.Second)
+	fmt.Println("all done.............................")
+}
